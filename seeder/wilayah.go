@@ -10,7 +10,6 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/typesense/typesense-go/v2/typesense"
 	"github.com/typesense/typesense-go/v2/typesense/api"
-	"github.com/typesense/typesense-go/v2/typesense/api/pointer"
 )
 
 type Document struct {
@@ -35,7 +34,7 @@ type Document struct {
 const (
 	batchSize      = 100 // Number of records to process in each batch
 	collectionName = "villages"
-	serverKey      = "http://127.0.0.1:8108"
+	serverKey      = "http://localhost:8108"
 	apiKey         = "WA5JCpQzlyAL3hdoWoYlxBQXLl8i0SgHNNoQLO7QnrHebSaL"
 )
 
@@ -71,22 +70,17 @@ func main() {
 			{Name: "full_name", Type: "string"},
 			{Name: "created_at", Type: "int64"},
 		},
-		DefaultSortingField: pointer.String("created_at"),
 	}
 
 	// Create the collection if it doesn't exist
 	_, err = client.Collection(collectionName).Retrieve(context.Background())
 	if err != nil {
-		if err.Error() == "collection not found" {
-			// Collection does not exist, create it
-			_, err = client.Collections().Create(context.Background(), schema)
-			if err != nil {
-				log.Printf("failed to create collection: %v", err)
-			} else {
-				log.Printf("collection %s created.", collectionName)
-			}
+		// Collection does not exist, create it
+		_, err = client.Collections().Create(context.Background(), schema)
+		if err != nil {
+			log.Printf("failed to create collection: %v", err)
 		} else {
-			log.Fatalf("failed to check collection existence: %v", err)
+			log.Printf("collection %s created.", collectionName)
 		}
 	} else {
 		log.Printf("collection %s already exists, skipping creation.", collectionName)
@@ -139,21 +133,6 @@ func main() {
 			doc.UpdatedAt = time.Now().Unix()
 
 			documents = append(documents, doc)
-
-			// Upsert when the batch size is reached
-			if len(documents) >= batchSize {
-				// Upsert the batch of documents into Typesense
-				for _, doc := range documents {
-					_, err := client.Collection(collectionName).Documents().Upsert(context.Background(), doc)
-					if err != nil {
-						log.Printf("failed to upsert document %s: %v", doc.ID, err)
-					} else {
-						log.Printf("successfully upserted document %s", doc.ID)
-					}
-				}
-				// Clear the documents slice for the next batch
-				documents = documents[:0]
-			}
 		}
 
 		// Upsert any remaining documents after the loop
