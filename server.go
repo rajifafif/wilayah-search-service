@@ -27,7 +27,7 @@ func Int(i int) *int {
 const (
 	collectionName = "villages"
 	serverKey      = "http://localhost:8108"
-	apiKey         = "psHoia1iEEl2wr71K4Aeb2utGVZhtRW0WjLq1i5QV9kHyp9U"
+	apiKey         = "WA5JCpQzlyAL3hdoWoYlxBQXLl8i0SgHNNoQLO7QnrHebSaL"
 	servicePort    = ":8109"
 )
 
