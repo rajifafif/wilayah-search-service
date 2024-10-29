@@ -35,7 +35,7 @@ type Document struct {
 const (
 	batchSize      = 100 // Number of records to process in each batch
 	collectionName = "villages"
-	serverKey      = "http://localhost:8108"
+	serverKey      = "http://127.0.0.1:8108"
 	apiKey         = "WA5JCpQzlyAL3hdoWoYlxBQXLl8i0SgHNNoQLO7QnrHebSaL"
 )
 
